@@ -1,0 +1,59 @@
+{
+	"dynamic": "false",
+	"include_in_all": false,
+	"properties": {
+		"@saved_at": {
+			"type": "date"
+		},
+		"@streamed_at": {
+			"type": "date"
+		},
+		"aliases": {
+			"type": "text",
+			"fields": {
+				"keyword": {
+					"type": "text",
+					"analyzer": "keyword_analyzer_with_ngram",
+					"search_analyzer": "standard_analyzer"
+				}
+			},
+			"analyzer": "standard_analyzer_with_ngram",
+			"search_analyzer": "standard_analyzer"
+		},
+		"area_copy_name": {
+			"type": "text",
+			"fields": {
+				"keyword": {
+					"type": "text",
+					"analyzer": "keyword_analyzer_with_ngram",
+					"search_analyzer": "standard_analyzer"
+				}
+			},
+			"analyzer": "standard_analyzer_with_ngram",
+			"search_analyzer": "standard_analyzer",
+			"include_in_all": true
+		},
+		"geofind_urn": {
+			"type": "text",
+			"index": false
+		},
+		"location": {
+			"type": "geo_point",
+			"store": true,
+			"ignore_malformed": true
+		},
+		"primary_city": {
+			"type": "text",
+			"index": false
+		},
+		"primary_state_code": {
+			"type": "keyword",
+			"index": false
+		},
+		"primary_state_name": {
+			"type": "text",
+			"analyzer": "standard_analyzer_with_ngram",
+			"search_analyzer": "standard_analyzer"
+		}
+	}
+}

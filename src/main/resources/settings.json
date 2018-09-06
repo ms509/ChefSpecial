@@ -1,0 +1,54 @@
+{
+	"analysis": {
+		"filter": {
+			"stop_filter": {
+				"type": "stop",
+				"stopwords": [
+					"the"
+				]
+			},
+			"nGram_filter": {
+				"token_chars": [
+					"letter",
+					"digit",
+					"punctuation",
+					"symbol"
+				],
+				"min_gram": "1",
+				"type": "edgeNGram",
+				"max_gram": "75"
+			}
+		},
+		"analyzer": {
+			"keyword_analyzer_with_ngram": {
+				"filter": [
+					"lowercase",
+					"asciifolding",
+					"stop_filter",
+					"nGram_filter"
+				],
+				"type": "custom",
+				"tokenizer": "keyword"
+			},
+			"standard_analyzer_with_ngram": {
+				"filter": [
+					"lowercase",
+					"asciifolding",
+					"stop_filter",
+					"nGram_filter"
+				],
+				"type": "custom",
+				"tokenizer": "standard"
+			},
+			"standard_analyzer": {
+				"filter": [
+					"lowercase",
+					"asciifolding",
+					"stop_filter"
+				],
+				"type": "custom",
+				"tokenizer": "standard"
+			}
+		}
+	}
+}

@@ -1,0 +1,28 @@
+gradle-build/
+classes/
+
+# Config override file
+src/main/resources/application-default.properties
+
+# Gradle
+.gradle/
+
+# Eclipse
+.classpath
+.project
+.settings/
+
+# Idea
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# jenv
+.java-version
+
+# OSX
+.DS_Store
+/bin/
+/out/
+application/cache
