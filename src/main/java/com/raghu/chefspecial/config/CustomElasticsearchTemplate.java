@@ -6,7 +6,9 @@ import static org.elasticsearch.client.Requests.refreshRequest;
 import java.io.IOException;
 import java.util.Map;
 
+import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequestBuilder;
+import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.admin.indices.mapping.put.PutMappingRequestBuilder;
 import org.elasticsearch.action.index.IndexRequestBuilder;
@@ -15,6 +17,7 @@ import org.elasticsearch.action.search.SearchAction;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchScrollRequest;
+import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.client.node.NodeClient;
@@ -71,18 +74,15 @@ public class CustomElasticsearchTemplate
        return this.executeSearch(searchRequest);
    }
 
-   public boolean createIndex(final String indexName, final Object settings) {
+   public boolean createIndex(final String indexName, String mappings, String esSettings) throws IOException {
        Assert.notNull(indexName, "No index defined for putMapping()");
-       Assert.notNull(this.nodeClient, "Node Client must not be null!");
-       final CreateIndexRequestBuilder createIndexRequestBuilder = this.nodeClient.admin().indices().prepareCreate(indexName);
-       if (settings instanceof String) {
-           createIndexRequestBuilder.setSettings(String.valueOf(settings), XContentType.JSON);
-       } else if (settings instanceof Map) {
-           createIndexRequestBuilder.setSettings((Map) settings);
-       } else if (settings instanceof XContentBuilder) {
-           createIndexRequestBuilder.setSettings((XContentBuilder) settings);
-       }
-       return createIndexRequestBuilder.execute().actionGet().isAcknowledged();
+       CreateIndexRequest request = new CreateIndexRequest("twitter");
+       request.mapping("chefspecial", mappings, XContentType.JSON);
+       request.settings(esSettings, XContentType.JSON);
+       
+       CreateIndexResponse createIndexResponse = highLevelClient.indices().create(request, RequestOptions.DEFAULT);;
+
+       return createIndexResponse.isAcknowledged();
 
    }
 

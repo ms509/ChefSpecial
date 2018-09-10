@@ -24,9 +24,9 @@ public class ElasticSearchController {
 
 	@RequestMapping("/create")
 	public String greeting() throws IOException {
-		String settings = this.loadFile("/Users/mbellamkonda/Projects/ChefSpecial/src/main/resources/settings.json");
-		String mappings = this.loadFile("/Users/mbellamkonda/Projects/ChefSpecial/src/main/resources/mappings.json");
-		this.customElasticSearchTemplate.createIndex(ESDocument.INDEX_NAME, settings);
+		String settings = this.loadFile("/Users/manjuraghavendrabellamkonda/projects/ChefSpecial/src/main/resources/settings.json");
+		String mappings = this.loadFile("//Users/manjuraghavendrabellamkonda/projects/ChefSpecial/src/main/resources/mappings.json");
+		this.customElasticSearchTemplate.createIndex(ESDocument.INDEX_NAME, mappings, settings);
 		this.customElasticSearchTemplate.putMapping(ESDocument.INDEX_NAME, ESDocument.TYPE, mappings);
 		this.customElasticSearchTemplate.refresh(ESDocument.INDEX_NAME);
 		return "greeting";
