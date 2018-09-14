@@ -4,32 +4,28 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.raghu.chefspecial.config.CustomElasticsearchTemplate;
-import com.raghu.chefspecial.document.model.ESDocument;
+import com.raghu.chefspecial.config.ElasticSearchTemplate;
+import com.raghu.chefspecial.util.ChefSpecialUtil;
 
 @RequestMapping("/es")
 @RestController
 public class ElasticSearchController {
 
 	@Autowired
-	private CustomElasticsearchTemplate customElasticSearchTemplate;
+	private ElasticSearchTemplate customElasticsearchTemplate;
 
-	@RequestMapping("/create")
-	public String greeting() throws IOException {
-		String settings = this.loadFile("/Users/manjuraghavendrabellamkonda/projects/ChefSpecial/src/main/resources/settings.json");
-		String mappings = this.loadFile("//Users/manjuraghavendrabellamkonda/projects/ChefSpecial/src/main/resources/mappings.json");
-		this.customElasticSearchTemplate.createIndex(ESDocument.INDEX_NAME, mappings, settings);
-		this.customElasticSearchTemplate.putMapping(ESDocument.INDEX_NAME, ESDocument.TYPE, mappings);
-		this.customElasticSearchTemplate.refresh(ESDocument.INDEX_NAME);
-		return "greeting";
+	@RequestMapping(value = "/createIndex", method = RequestMethod.POST)
+	public Boolean greeting1() throws IOException {
+		String mappings = this.loadFile(ChefSpecialUtil.MAPPING_FILE);
+
+		return customElasticsearchTemplate.createIndex(mappings, ChefSpecialUtil.INDEX_NAME);
 	}
 
 	/**

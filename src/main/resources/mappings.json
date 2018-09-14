@@ -1,59 +1,140 @@
 {
-	"dynamic": "false",
-	"include_in_all": false,
-	"properties": {
-		"@saved_at": {
-			"type": "date"
-		},
-		"@streamed_at": {
-			"type": "date"
-		},
-		"aliases": {
-			"type": "text",
-			"fields": {
-				"keyword": {
+	"mappings": {
+		"wiki": {
+			"dynamic": "false",
+			"include_in_all": false,
+			"properties": {
+				"@saved_at": {
+					"type": "date"
+				},
+				"@streamed_at": {
+					"type": "date"
+				},
+				"docType": {
+					"type": "keyword",
+					"index": true
+				},
+				"aliases": {
 					"type": "text",
-					"analyzer": "keyword_analyzer_with_ngram",
+					"fields": {
+						"keyword": {
+							"type": "text",
+							"analyzer": "keyword_analyzer_with_ngram",
+							"search_analyzer": "standard_analyzer"
+						}
+					},
+					"analyzer": "standard_analyzer_with_ngram",
 					"search_analyzer": "standard_analyzer"
+				},
+				"name": {
+					"type": "text"
+				},
+				"displayName": {
+					"type": "text"
+				},
+				"additionalDetails": {
+					"properties": {
+						"isAvailable": {
+							"type": "boolean"
+						}
+					}
+				},
+				"instructions": {
+					"properties": {
+						"order": {
+							"type": "integer"
+						},
+						"instruction": {
+							"type": "keyword"
+						},
+						"imageUrl": {
+							"type": "keyword"
+						},
+						"videoUrl": {
+							"type": "keyword"
+						},
+						"isLastStep": {
+							"type": "boolean"
+						}
+					}
+				},
+				"ingredients": {
+					"properties": {
+						"name": {
+							"type": "text"
+						},
+						"quantity": {
+							"type": "text"
+						},
+						"id": {
+							"type": "keyword"
+						},
+						"isExactQuantityRequired": {
+							"type": "boolean"
+						},
+						"isAvailable": {
+							"type": "boolean"
+						}
+					}
 				}
-			},
-			"analyzer": "standard_analyzer_with_ngram",
-			"search_analyzer": "standard_analyzer"
-		},
-		"area_copy_name": {
-			"type": "text",
-			"fields": {
-				"keyword": {
-					"type": "text",
-					"analyzer": "keyword_analyzer_with_ngram",
-					"search_analyzer": "standard_analyzer"
-				}
-			},
-			"analyzer": "standard_analyzer_with_ngram",
-			"search_analyzer": "standard_analyzer",
-			"include_in_all": true
-		},
-		"geofind_urn": {
-			"type": "text",
-			"index": false
-		},
-		"location": {
-			"type": "geo_point",
-			"store": true,
-			"ignore_malformed": true
-		},
-		"primary_city": {
-			"type": "text",
-			"index": false
-		},
-		"primary_state_code": {
-			"type": "keyword",
-			"index": false
-		},
-		"primary_state_name": {
-			"type": "text",
-			"analyzer": "standard_analyzer_with_ngram",
-			"search_analyzer": "standard_analyzer"
+			}
 		}
-	}
+	},
+	"settings": {
+		"index": {
+			"analysis": {
+				"filter": {
+					"stop_filter": {
+						"type": "stop",
+						"stopwords": [
+							"the"
+						]
+					},
+					"nGram_filter": {
+						"token_chars": [
+							"letter",
+							"digit",
+							"punctuation",
+							"symbol"
+						],
+						"min_gram": "1",
+						"type": "edgeNGram",
+						"max_gram": "75"
+					}
+				},
+				"analyzer": {
+					"keyword_analyzer_with_ngram": {
+						"filter": [
+							"lowercase",
+							"asciifolding",
+							"stop_filter",
+							"nGram_filter"
+						],
+						"type": "custom",
+						"tokenizer": "keyword"
+					},
+					"standard_analyzer_with_ngram": {
+						"filter": [
+							"lowercase",
+							"asciifolding",
+							"stop_filter",
+							"nGram_filter"
+						],
+						"type": "custom",
+						"tokenizer": "standard"
+					},
+					"standard_analyzer": {
+						"filter": [
+							"lowercase",
+							"asciifolding",
+							"stop_filter"
+						],
+						"type": "custom",
+						"tokenizer": "standard"
+					}
+				}
+			}
+		}
+	},
+	"template": "chef-special-v1"
 }

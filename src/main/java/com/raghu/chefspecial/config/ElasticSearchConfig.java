@@ -1,76 +1,57 @@
 package com.raghu.chefspecial.config;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.http.Header;
 import org.apache.http.HttpHost;
-import org.apache.http.message.BasicHeader;
-import org.apache.tomcat.util.http.fileupload.FileUtils;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
 import org.elasticsearch.client.RestClient;
+import org.elasticsearch.client.RestClientBuilder;
 import org.elasticsearch.client.RestHighLevelClient;
-import org.elasticsearch.client.node.NodeClient;
-import org.elasticsearch.common.lease.Releasable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.DisposableBean;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.beans.factory.config.AbstractFactoryBean;
+import org.elasticsearch.client.Node;
+import org.elasticsearch.client.NodeSelector;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class ElasticSearchConfig extends AbstractFactoryBean {
-	
-	private static final Logger LOG = LoggerFactory.getLogger(ElasticSearchConfig.class);
-	
-	@Value("${spring.data.elasticsearch.cluster-nodes}")
-    private String clusterNodes;
-    @Value("${spring.data.elasticsearch.cluster-name}")
-    private String clusterName;
-    private RestHighLevelClient restHighLevelClient;
-    
-    
-    
-    @Override
-    public void destroy() {
-        try {
-            if (restHighLevelClient != null) {
-                restHighLevelClient.close();
-            }
-        } catch (final Exception e) {
-            LOG.error("Error closing ElasticSearch client: ", e);
-        }
-    }
+public class ElasticSearchConfig {
 
-    @Override
-    public Class<RestHighLevelClient> getObjectType() {
-        return RestHighLevelClient.class;
-    }
+	@Bean
+	public ElasticSearchTemplate customElasticsearchTemplate() {
+		return new ElasticSearchTemplate(getHighLevelClient(), getLowLevelClient());
+	}
 
-    @Override
-    public boolean isSingleton() {
-        return false;
-    }
+	private RestClient getLowLevelClient() {
+		RestClient restClient = builder().build();
 
-    @Override
-    public RestHighLevelClient createInstance() {
-        return buildClient();
-    }
+		return restClient;
+	}
 
-    private RestHighLevelClient buildClient() {
-        try {
-            restHighLevelClient = new RestHighLevelClient(
-                    RestClient.builder(
-                            new HttpHost("localhost", 9200, "http"),
-                            new HttpHost("localhost", 9201, "http")));
-        } catch (Exception e) {
-            LOG.error(e.getMessage());
-        }
-        return restHighLevelClient;
-    }
+	private RestHighLevelClient getHighLevelClient() {
+		RestHighLevelClient client = new RestHighLevelClient(this.builder());
+		return client;
+	}
 
+	private RestClientBuilder builder() {
+		RestClientBuilder builder = RestClient.builder(new HttpHost("localhost", 9200, "http"));
+		builder.setNodeSelector(NodeSelector.SKIP_DEDICATED_MASTERS);
+		builder.setFailureListener(new RestClient.FailureListener() {
+			@Override
+			public void onFailure(Node node) {
+				System.out.println(node.getAttributes());
+			}
+		});
+		builder.setRequestConfigCallback(new RestClientBuilder.RequestConfigCallback() {
+			@Override
+			public RequestConfig.Builder customizeRequestConfig(RequestConfig.Builder requestConfigBuilder) {
+				return requestConfigBuilder.setSocketTimeout(10000);
+			}
+		});
+
+//		builder.setHttpClientConfigCallback(new RestClientBuilder.HttpClientConfigCallback() {
+//			@Override
+//			public HttpAsyncClientBuilder customizeHttpClient(HttpAsyncClientBuilder httpClientBuilder) {
+//				return httpClientBuilder.setProxy(new HttpHost("proxy", 9000, "http"));
+//			}
+//		});
+		return builder;
+	}
 }

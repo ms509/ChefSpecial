@@ -1,5 +1,6 @@
 gradle-build/
 classes/
+build/
 
 # Config override file
 src/main/resources/application-default.properties
